@@ -7,9 +7,16 @@ export default function Page() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [touched, setTouched] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setTouched(true);
+    if (!title.trim()) {
+      // simple validation: title required
+      alert("제목을 입력하세요");
+      return;
+    }
     // 백엔드가 아직 없으므로 alert 표시 후 posts로 이동
     alert("저장되었습니다");
     router.push("/posts");
@@ -30,9 +37,13 @@ export default function Page() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목을 입력하세요"
-            required
+            onBlur={() => setTouched(true)}
+            aria-invalid={touched && !title.trim()}
             className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
+          {touched && !title.trim() && (
+            <p className="text-sm text-red-600 mt-1">제목은 비어있을 수 없습니다.</p>
+          )}
         </div>
 
         <div>
@@ -53,7 +64,7 @@ export default function Page() {
           <button
             type="submit"
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
-            disabled={!title.trim() || !content.trim()}
+            disabled={!content.trim()}
           >
             저장
           </button>
