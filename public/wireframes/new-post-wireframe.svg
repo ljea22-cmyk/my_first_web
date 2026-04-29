@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="900" height="700" viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg" style="background:#fff">
+  <style>
+    .muted { fill:#8b8b8b; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+    .title { fill:#111827; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto; font-weight:700 }
+    .input { fill:#fff; stroke:#e5e7eb; rx:8 }
+    .textarea { fill:#fff; stroke:#e5e7eb }
+  </style>
+
+  <!-- Header -->
+  <rect x="28" y="24" width="844" height="56" rx="8" fill="#ffffff" stroke="#f3f4f6"/>
+  <text x="56" y="58" class="title" font-size="18">새 포스트 작성</text>
+
+  <!-- Form container -->
+  <rect x="60" y="110" width="780" height="520" rx="12" fill="#fbfdff" stroke="#eef2f7" />
+
+  <!-- Title field -->
+  <text x="88" y="160" class="muted" font-size="13">제목</text>
+  <rect x="88" y="174" width="724" height="44" rx="8" fill="#ffffff" stroke="#e6edf3"/>
+  <text x="104" y="204" class="muted" font-size="13">제목을 입력하세요</text>
+
+  <!-- Content field -->
+  <text x="88" y="240" class="muted" font-size="13">내용</text>
+  <rect x="88" y="254" width="724" height="260" class="textarea" rx="8"/>
+  <text x="104" y="290" class="muted" font-size="13">여기에 글 내용을 입력합니다. (멀티라인)</text>
+
+  <!-- Actions -->
+  <rect x="88" y="534" width="120" height="40" rx="8" fill="#4f46e5"/>
+  <text x="148" y="560" fill="#fff" font-size="14" text-anchor="middle">저장</text>
+
+  <rect x="220" y="534" width="120" height="40" rx="8" fill="#ffffff" stroke="#e6edf3"/>
+  <text x="280" y="560" class="muted" font-size="14" text-anchor="middle">취소</text>
+
+  <!-- Validation hint -->
+  <text x="88" y="590" class="muted" font-size="12">간단한 검증: 제목 필수, 내용 비어있으면 비활성화</text>
+
+</svg>

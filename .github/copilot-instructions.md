@@ -1,27 +1,35 @@
-# Copilot 지시사항
-
-다음 지침은 이 리포지터리에서 코드 생성 시 Copilot(또는 유사 AI 도구)이 따를 규칙입니다.
-
 ## Tech Stack
 
-- Next.js: 16.2.1 (App Router ONLY)
-- Tailwind CSS: ^4
-
-> 이 레포는 App Router 기반 구조를 사용합니다. `pages/` 디렉토리(구 Pages Router)는 사용하지 마세요.
+- Next.js 16.2.1 (App Router only)
+- React 19.2.4
+- Tailwind CSS 4
+- shadcn/ui (components/ui/ 경로에 설치됨)
 
 ## Coding Conventions
 
-- 기본 컴포넌트 유형: Server Component
-  - 가능한 한 서버 컴포넌트로 작성하세요(특별한 이유가 있을 때만 클라이언트 컴포넌트 사용).
-- 스타일: Tailwind CSS만 사용
-  - CSS 모듈, styled-components, emotion 등 다른 스타일 라이브러리는 사용하지 마세요.
+- Default to Server Components unless a Client Component is required.
+- Use Tailwind CSS for styling.
+- Keep components simple and easy to verify.
+- Prefer files inside `app/` for routes.
 
-## Known AI Mistakes / 금지 목록
+## Design Tokens
 
-- `next/router` 사용 금지 — 대신 `next/navigation`을 사용하세요.
-- Pages Router(즉, `pages/` 기반 라우팅) 사용 금지 — App Router만 사용합니다.
-- `params` 처리 시 `await` 사용은 필수입니다 (params는 await 필수).
+- Primary color: shadcn/ui --primary
+- Background: --background
+- Card: shadcn/ui Card 컴포넌트 사용 (rounded-lg shadow-sm)
+- Spacing: 컨텐츠 간격 space-y-6, 카드 내부 p-6
+- Max width: max-w-4xl mx-auto (메인 컨텐츠)
+- 반응형: md 이상 2열 그리드, 모바일 1열
 
----
+## Component Rules
 
-추가 지시나 예외가 있을 경우 해당 이슈나 PR에 명시해주세요.
+- UI 컴포넌트는 shadcn/ui 사용 (components/ui/)
+- Button, Card, Input, Dialog 등 shadcn/ui 컴포넌트 우선
+- 커스텀 컴포넌트는 components/ 루트에 배치
+- Tailwind 기본 컬러 직접 사용 금지 → CSS 변수(디자인 토큰) 사용
+
+## Known AI Mistakes
+
+- Do not use `next/router`; use `next/navigation` when navigation is needed.
+- Do not create `pages/` router files; this project uses the App Router.
+- Do not add `"use client"` unless interactivity or browser APIs are actually needed.
