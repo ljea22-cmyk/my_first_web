@@ -200,3 +200,21 @@
 
 필요하면 이 파일을 기반으로 컴포넌트 템플릿 파일들(`components/ui/*` 및 `components/*.tsx`)과 DB 마이그레이션 스크립트 템플릿을 제가 생성해 드리겠습니다.
 
+---
+
+Ch9 Supabase Auth 지침
+
+- 인증 방식: 이메일/비밀번호만 사용합니다. 소셜 로그인을 추가하지 않습니다.
+- 로그인 구현: `signInWithPassword` 사용. 구버전 `auth.signIn()` 호출 금지.
+- 클라이언트에 service_role 키 저장 금지. 서버 전용으로 사용합니다.
+- 보호 라우트: App Router 환경에서 `middleware.ts`로 처리합니다.
+- 환경변수(Ch8 기준) 유지:
+  - NEXT_PUBLIC_SUPABASE_URL
+  - NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+Version Policy
+
+- 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
+- 실제 `package.json`이 더 최신일 수 있음(예: 이 저장소는 `@supabase/supabase-js` ^2.105.1, `@supabase/ssr` ^0.10.2 를 명시).
+- 문서/수업 예시는 교재 기준으로 통일하되, 빌드 이슈는 `package.json`을 기준으로 디버깅합니다.
+

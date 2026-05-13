@@ -33,3 +33,28 @@
 - Do not use `next/router`; use `next/navigation` when navigation is needed.
 - Do not create `pages/` router files; this project uses the App Router.
 - Do not add `"use client"` unless interactivity or browser APIs are actually needed.
+
+---
+
+Ch9 Supabase Auth 기준 요약
+
+- 인증 방식: 이메일/비밀번호 인증만 사용. 소셜 로그인을 추가하지 않음.
+- Supabase Auth 로그인 구현 시 `signInWithPassword` 사용 (구버전 `auth.signIn()` 사용 금지).
+- 서비스 역할 키(service_role)는 클라이언트에 절대 두지 말 것.
+- App Router만 사용. `next/router` 또는 `pages/` 라우터 사용 금지.
+- 보호 라우트는 교재 기준으로 `middleware.ts`를 사용.
+- 환경변수 이름(Ch8 기준) 유지:
+	- NEXT_PUBLIC_SUPABASE_URL
+	- NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+Version Policy
+
+- 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
+- 실제 `package.json`이 더 최신일 수 있음. 수업 프롬프트/문서 설명은 위 교재 기준으로 통일.
+- 빌드 오류가 버전 차이에서 발생하면 `package.json` 기준으로 원인을 확인.
+
+현재 저장소의 `package.json`(요약):
+- @supabase/supabase-js: ^2.105.1 (현재 설치 기준)
+- @supabase/ssr: ^0.10.2 (현재 설치 기준)
+
+따라서 코드/설명은 교재 기준으로 작성하되, 실제 빌드/런중 문제가 발생하면 위 실제 설치 기준을 우선 확인하세요.
