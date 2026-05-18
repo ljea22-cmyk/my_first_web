@@ -1,25 +1,80 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { createBrowserSupabase } from "@/lib/supabase/client";
 
 export default function Page() {
   const router = useRouter();
+  const { user, loading } = useAuth();
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [touched, setTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [loading, user, router]);
+
+  if (!loading && !user) {
+    return (
+      <main className="max-w-2xl mx-auto p-6">
+        <p>로그인이 필요합니다. 로그인 페이지로 이동합니다...</p>
+      </main>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
+    setError(null);
     if (!title.trim()) {
-      // simple validation: title required
-      alert("제목을 입력하세요");
+      setError("제목을 입력하세요");
       return;
     }
-    // 백엔드가 아직 없으므로 alert 표시 후 posts로 이동
-    alert("저장되었습니다");
-    router.push("/posts");
+    if (!content.trim()) {
+      setError("내용을 입력하세요");
+      return;
+    }
+    if (!user) {
+      setError("로그인이 필요합니다");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const supabase = createBrowserSupabase();
+      const res = await supabase.from("posts").insert([
+        {
+          title: title.trim(),
+          content: content.trim(),
+          user_id: user.id,
+        },
+      ]).select("id").single();
+
+      if (res.error) {
+        setError(res.error.message || String(res.error));
+        setSubmitting(false);
+        return;
+      }
+
+      const newPost = res.data;
+      // Redirect to posts list or new post detail if id available
+      if (newPost?.id) {
+        router.push(`/posts/${newPost.id}`);
+      } else {
+        router.push("/posts");
+      }
+    } catch (err: any) {
+      setError(err?.message ?? String(err));
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -60,13 +115,15 @@ export default function Page() {
           />
         </div>
 
+        {error && <p className="text-sm text-red-600">{error}</p>}
+
         <div className="flex items-center gap-3">
           <button
             type="submit"
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
-            disabled={!content.trim()}
+            disabled={submitting}
           >
-            저장
+            {submitting ? "저장 중..." : "저장"}
           </button>
 
           <button

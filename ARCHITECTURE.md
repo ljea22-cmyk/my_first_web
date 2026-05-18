@@ -159,7 +159,7 @@
 
 - `posts` 테이블 (권장컬럼)
   - id: UUID (PK)
-  - author_id: UUID (FK -> users.id), not null
+  - user_id: UUID (FK -> profiles.id), not null
   - title: string, not null
   - slug: string, unique, not null
   - content: text, not null
@@ -170,14 +170,16 @@
   - updated_at: timestamp, nullable
   - deleted_at: timestamp, nullable (soft delete)
 
+  > 규칙(중요): 프로젝트 전반에서 `posts` 테이블의 컬럼명은 Ch8 마이그레이션에 따라 `id, user_id, title, content, created_at` 을 기본으로 삼습니다. 임의로 `author`/`author_id`/`date` 등 다른 이름을 사용하지 마세요.
+
 - 인덱스/제약
   - users.email: unique index
-  - posts.author_id: index (조회 성능)
+  - posts.user_id: index (조회 성능)
   - posts.slug: unique index (빠른 조회)
 
 - 간단한 API 계약(참고)
   - Create Post (POST /api/posts)
-    - Request body: { title, content, author_id }
+  - Request body: { title, content, user_id }
     - Response: 201 + { id }
   - Read Post (GET /api/posts/:id or /api/posts?slug=...)
   - List Posts (GET /api/posts?page=&limit=&q=)
@@ -185,8 +187,13 @@
   - Update/Delete: 인증/권한 검사 필요
 
 - 보안/운영 고려사항
-  - 인증: JWT 또는 세션 기반 인증 이후 author_id 연계
+  - 인증: JWT 또는 세션 기반 인증 이후 user_id 연계 (프로필과 연결)
   - 권한: 작성자만 편집/삭제 허용
+
+  추가 규칙
+
+  - `next/router`(Pages Router 방식) 사용 금지 — App Router 환경에서는 `next/navigation`을 사용하세요.
+  - service_role 같은 서버 전용 키는 클라이언트에 절대 포함하지 마세요. 모든 클라이언트 코드는 `NEXT_PUBLIC_*` 공개 키만 사용해야 합니다.
   - 입력 검증/콘텐츠 사이징: 최대 길이 제한 및 XSS 방지
   - 마이그레이션: 초기 스키마는 위 컬럼으로 시작하되, 이후 태그/카테고리/댓글 기능 추가 예정
 

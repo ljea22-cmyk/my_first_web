@@ -15,12 +15,30 @@
 - [x] 포스트 목록 페이지
 - [ ] 포스트 상세 페이지
 - [ ] 포스트 작성 (CRUD)
+	- 상태: 목록/상세/작성은 Ch10에서 기본 구현됨 (`app/posts/page.tsx`, `app/posts/[id]/page.tsx`, `app/posts/new/page.tsx`).
+	- 남은 작업: 수정/삭제의 서버측 이전(권장), 그리고 API route로의 이전 여부 결정.
 - [ ] 로그인/회원가입
 - [ ] Supabase Auth 연동 (Ch9 기준)
 	- 이메일/비밀번호 인증만 구현
 	- `signInWithPassword` 사용
 	- service_role 키는 클라이언트에 두지 않음
 	- 환경변수 이름: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+Ch10 준비: posts CRUD 우선 작업 항목
+
+- [ ] Supabase 브라우저 클라이언트 점검: `lib/supabase/client.ts`가 브라우저 전용으로 올바르게 구현되었는지 확인
+- [ ] AuthProvider/useAuth 확인: `contexts/AuthContext.tsx` 또는 `components/AuthProvider.tsx`가 app/layout.tsx에 연결되어 있는지 확인
+- [ ] posts 마이그레이션 확인: `supabase/migrations/*.sql`에서 posts 테이블의 컬럼명이 `user_id` 인지 확인(현재는 `user_id`로 되어 있음)
+- [ ] CRUD 엔드포인트 또는 클라이언트 구현 방안 결정: API routes(`app/api/posts/route.ts`) vs 클라이언트에서 Supabase 직접 호출 (권장: 서버에서 민감한 로직은 서버측에서 처리)
+- [ ] 보호 라우트: `/posts/new` 등 작성/수정/삭제 페이지 접근은 `middleware.ts`로 보호 (Ch9 지침)
+
+Ch10 완료 시점에 생성/수정된 파일(참고):
+- `app/posts/page.tsx` (Server) — posts 목록 Supabase 조회
+- `app/posts/[id]/page.tsx` (Server) — 단일 post 조회 + `PostActions` 마운트
+- `app/posts/new/page.tsx` (Client) — 새 글 작성 폼 (useAuth 사용)
+- `components/PostActions.tsx` (Client) — 편집/삭제 UI 및 Supabase update/delete 호출
+- `contexts/AuthContext.tsx`, `providers/AuthProviderWrapper.tsx` — 클라이언트 인증 컨텍스트/래퍼
+- `lib/posts.ts` — Ch8 스키마에 맞춘 로컬 mock 타입/데이터 정리
 
 Version Policy 참고:
 - 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2

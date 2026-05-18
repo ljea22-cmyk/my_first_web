@@ -1,5 +1,6 @@
 import "./globals.css";
 import Link from "next/link";
+import AuthProviderWrapper from "@/providers/AuthProviderWrapper";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +39,10 @@ export default function RootLayout({
         </nav>
 
         <main className="flex-1">
-          <div className="max-w-4xl mx-auto p-6">{children}</div>
+          <div className="max-w-4xl mx-auto p-6">
+            {/* AuthProvider runs in the browser via this client wrapper */}
+            <AuthProviderWrapper>{children}</AuthProviderWrapper>
+          </div>
         </main>
 
         <footer className="text-center text-gray-500 py-6">© 2026 내 블로그</footer>

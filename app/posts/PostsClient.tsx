@@ -21,7 +21,7 @@ export default function PostsClient({ initialPosts }: Props) {
 
   const handleSearch = (q: string) => setQuery(q);
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
     setPosts((prev) => prev.filter((p) => p.id !== id));
   };
@@ -53,7 +53,7 @@ export default function PostsClient({ initialPosts }: Props) {
             </div>
 
             <p className="text-gray-600 mt-2">{post.content.slice(0, 120)}{post.content.length > 120 ? '…' : ''}</p>
-            <p className="text-xs text-gray-400 mt-4">작성자: {post.author} • {post.date}</p>
+            <p className="text-xs text-gray-400 mt-4">작성자 ID: {post.user_id ?? '알수없음'} • {post.created_at}</p>
           </article>
         ))}
       </div>

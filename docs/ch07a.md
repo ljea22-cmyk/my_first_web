@@ -849,13 +849,13 @@ posts (포스트)
 ├── id: UUID (자동 생성)
 ├── title: 제목
 ├── content: 본문
-├── author_id: 작성자 (→ users.id)
+├── user_id: 작성자 (→ profiles.id)
 └── created_at: 작성일시 (자동 생성)
 ```
 
 대부분의 웹앱은 **사용자 역할(role)**이 필요하다. 일반 사용자와 관리자(admin)처럼 역할에 따라 접근 가능한 페이지와 수행 가능한 작업이 달라진다. `role` 컬럼은 Ch9(인증)에서 프로필 조회에 활용하고, Ch11(RLS)에서 역할 기반 접근 제어에 사용한다.
 
-**테이블 관계**: 한 명의 사용자(users)가 여러 개의 블로그 글(posts)을 작성할 수 있다 → **1:N 관계**. `posts.author_id`가 `users.id`를 참조한다.
+**테이블 관계**: 한 명의 사용자(profiles)가 여러 개의 블로그 글(posts)을 작성할 수 있다 → **1:N 관계**. `posts.user_id`는 `profiles.id`를 참조합니다. (`profiles.id`는 `auth.users(id)`를 참조하도록 설계됩니다.)
 
 ### 7.7.2 [ARCHITECTURE.md](http://architecture.md/) — 프로젝트별 설계 문서
 
@@ -908,8 +908,8 @@ Layout
 
 ## Data Model
 
-- users: id, email, name, avatar_url, role ('user'|'admin')
-- posts: id, title, content, author_id (→ users.id), created_at
+- profiles: id (→ auth.users.id), username, avatar_url, role
+- posts: id, title, content, user_id (→ profiles.id), created_at
 
 ## Design Tokens
 

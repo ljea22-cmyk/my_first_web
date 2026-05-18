@@ -47,3 +47,14 @@ Version Policy
 
 - 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
 - 실제 package.json이 더 최신일 수 있으니, 빌드 문제 시 package.json 버전 확인
+
+Ch10 준비 핵심
+
+- Supabase 브라우저 클라이언트는 `lib/supabase/client.ts`를 사용하세요.
+- 인증 패턴: `AuthProvider` + `useAuth()`를 사용해 로그인 상태를 전역으로 관리합니다.
+- posts 테이블의 FK 컬럼명은 레포지토리 마이그레이션에 맞춰 `user_id`를 사용합니다.
+- App Router만 사용( `pages/` 또는 `next/router` 사용 금지). 클라이언트 네비게이션은 `next/navigation` 사용.
+
+버전 표기 규칙
+
+- 문서 예시는 교재 기준으로 작성합니다. 다만 저장소의 `package.json`에 더 최신 패키지가 적혀 있으면 문서에 "교재 기준 vs 현재 설치 기준"을 함께 기재합니다.

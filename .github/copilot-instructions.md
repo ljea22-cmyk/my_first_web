@@ -28,6 +28,12 @@
 - 커스텀 컴포넌트는 components/ 루트에 배치
 - Tailwind 기본 컬러 직접 사용 금지 → CSS 변수(디자인 토큰) 사용
 
+## Safety / Naming Rules (important)
+
+- Do NOT rename `posts` table columns from the Ch8 schema. Use `id`, `user_id`, `title`, `content`, `created_at` across code and docs.
+- Do NOT use `next/router` or Pages Router patterns; App Router only — use `next/navigation` in client code.
+- Do NOT include `service_role` or any server-only Supabase keys in client code. Only `NEXT_PUBLIC_*` keys may be present on the client.
+
 ## Known AI Mistakes
 
 - Do not use `next/router`; use `next/navigation` when navigation is needed.
@@ -58,3 +64,11 @@ Version Policy
 - @supabase/ssr: ^0.10.2 (현재 설치 기준)
 
 따라서 코드/설명은 교재 기준으로 작성하되, 실제 빌드/런중 문제가 발생하면 위 실제 설치 기준을 우선 확인하세요.
+
+Ch10 준비 요약
+
+- Ch8에서 생성한 Supabase 브라우저 클라이언트는 `lib/supabase/client.ts`를 사용합니다. 이 파일을 프로젝트의 브라우저/클라이언트 컴포넌트에서 사용하세요 — `createBrowserSupabase()` 또는 `supabase` 싱글톤을 참고합니다.
+- Ch9 인증은 `AuthProvider` + `useAuth()` 패턴을 따릅니다. `contexts/AuthContext.tsx` 또는 `components/AuthProvider.tsx` 형태로 구현되어야 합니다.
+- posts 테이블 컬럼은 Ch8 마이그레이션(프로젝트 내 `supabase/migrations/*.sql`)에 맞춥니다. 현재 레포의 스키마는 `posts(id, user_id, title, content, created_at)` 입니다. 문서/코드에서 컬럼명(특히 `user_id`)을 Ch8 스키마와 동일하게 사용하세요.
+- 라우팅: App Router 전용입니다 (`app/`), `pages/` 또는 `next/router` 사용 금지. 클라이언트 네비게이션은 `next/navigation`을 사용합니다.
+- 수정/삭제 UI는 사용자 경험(UX) 영역입니다. 실제 권한 검증/보안은 Ch11에서 RLS로 처리하므로 문서에 UX와 보안 책임을 분리해서 기재합니다.

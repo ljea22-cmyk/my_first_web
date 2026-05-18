@@ -24,6 +24,12 @@
 	 - 실제 `package.json`이 더 최신일 수 있습니다. 문서/수업 예시는 교재 기준으로 통일하되, 빌드/런타임 문제는 `package.json`을 기준으로 원인을 확인합니다.
  - 에이전트는 코드/설명에서 교재 기준을 사용해 예제를 작성하되, 저장소의 `package.json`과 충돌하는 버전 정보는 삭제하지 않고 "교재 기준 vs 현재 설치 기준"으로 함께 명시합니다.
 
+6) Ch10 준비 추가 규칙
+ - Supabase 브라우저 클라이언트는 `lib/supabase/client.ts`를 사용합니다. 브라우저 전용이며 `createBrowserSupabase()`와 `supabase` 싱글톤이 제공됩니다.
+ - 인증: `AuthProvider` + `useAuth()` 패턴을 사용해 앱 전체의 로그인 상태를 공유합니다. 파일 위치는 `contexts/AuthContext.tsx` 또는 `components/AuthProvider.tsx`로 권장합니다.
+ - posts 테이블의 FK 컬럼명은 마이그레이션에 맞춰 `user_id`를 사용합니다. 문서/코드에서 다른 컬럼명(author_id 등)을 사용하지 마세요.
+ - App Router 전용: `pages/` 폴더나 `next/router` 사용 금지. 클라이언트 라우팅은 `next/navigation`을 사용합니다.
+
 6) 추가 지침
  - `"use client"`는 상호작용 또는 브라우저 API가 필요할 때만 사용합니다.
  - `next/navigation`을 사용해 네비게이션을 수행합니다.
