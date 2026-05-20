@@ -49,4 +49,14 @@ Version Policy 참고:
 - [ ] 마이페이지
 - [ ] 댓글 기능
 
+Ch11 RLS 마무리 작업
+
+- [x] posts RLS 마이그레이션 파일 생성 (`supabase/migrations/20260520043533_add_posts_rls.sql`)
+- [ ] DB에 마이그레이션 적용 (`npx supabase db push` 또는 마이그레이션 실행)
+- [ ] 다른 계정(사용자 A/B) 우회 테스트 및 결과 기록
+- [ ] 민감 키 노출(grep: sb_secret_, service_role, sbp_) 재검증
+- [ ] 빌드/배포 검증 (npm run build, CI 배포 검증)
+
+참고: 마이그레이션 파일은 현재 로컬에 존재합니다. 커밋 후 Staging DB에 적용하여 테스트를 진행해 주세요.
+
 ## 진행률: 6/12 (50%)

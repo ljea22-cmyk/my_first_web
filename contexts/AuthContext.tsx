@@ -41,7 +41,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       mounted = false;
-      data.subscription.unsubscribe();
+      try {
+        // data may be undefined in some edge cases; check before calling
+        if (data && (data as any).subscription && typeof (data as any).subscription.unsubscribe === 'function') {
+          ;(data as any).subscription.unsubscribe();
+        }
+      } catch (e) {
+        // swallow cleanup errors — they are non-fatal
+        // eslint-disable-next-line no-console
+        console.warn('[AuthContext] failed to unsubscribe from auth listener', e);
+      }
     };
   }, []);
 

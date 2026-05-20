@@ -47,11 +47,9 @@
 	- 예: `app/api/auth/route.ts` — 인증 관련 라우트 (향후)
 
 ## 3) 유저 플로우
-
 아래 플로우는 UI 상호작용과 서버/클라이언트 책임을 함께 기술합니다.
 
 ### A. 글 읽기 (브라우징)
-
 - 사용자 동작
 	1. 사용자가 `/posts` 또는 홈에서 포스트 카드 목록을 봄
 	2. 관심 있는 카드 클릭 → `/posts/[id]`로 이동
@@ -69,12 +67,10 @@
 
 ### B. 글 작성
 
-- 사용자 동작
 	1. `/posts/new`로 이동(또는 상단 '새 글 작성' 클릭)
 	2. 제목과 내용을 입력
 	3. '저장' 클릭 → 제출
 
-- 시스템 책임
 	- `app/posts/new/page.tsx`는 클라이언트 폼 컴포넌트를 사용
 	- 클라이언트에서 간단한 유효성 검사 (제목 필수 등)
 	- 제출 시 서버 API (`app/api/posts/route.ts`)에 POST 요청
@@ -84,10 +80,8 @@
 	- Input: { title: string (required), content: string }
 	- Output 성공: 201 + created post id
 	- Error: 4xx / 5xx 메시지
-
 - 엣지케이스
 	- 빈 제목 제출: 프론트에서 차단 및 폼 에러 표시
-	- 네트워크 지연: 제출 중 로딩 상태/버튼 비활성화
 	- 중복 제출: 버튼 비활성화 혹은 idempotency 처리
 
 ### C. 마이페이지 (내 글 관리)
@@ -96,7 +90,6 @@
 	1. 로그인 후 `/me`로 이동
 	2. 내가 쓴 글 리스트 확인, 글 편집/삭제 선택
 
-- 시스템 책임
 	- 서버에서 사용자 식별(향후 인증), 해당 사용자의 포스트를 조회
 	- 편집/삭제는 클라이언트에서 요청을 보내고, 성공 시 UI 갱신(옵티미스틱 또는 재요청)
 
@@ -111,12 +104,10 @@
 - 디렉터리
   - `components/ui/` — shadcn/ui 기반의 재사용 가능한 UI 컴포넌트(프로젝트 전역)
   - `components/` — 페이지별 조합 컴포넌트(예: `PostCard`, `PostList`, `EditorForm`)
-
 - 핵심 컴포넌트(설계)
   - Button
     - 위치: `components/ui/button.tsx`
     - 역할: 공통 버튼 스타일과 variant(size/variant) 제공. `class-variance-authority`로 variant 관리.
-    - 사용처: 모든 액션 버튼 (글 작성, 저장, 취소, 삭제 등)
   - Card
     - 위치: `components/ui/card.tsx`
     - 역할: 포스트 요약 카드(타이틀, 요약, 메타) 레이아웃 제공.
@@ -125,7 +116,6 @@
     - 위치: `components/ui/input.tsx`
     - 역할: 텍스트 입력(검색, 제목 입력 등) 일관된 스타일 제공
     - 사용처: 검색바, 폼 필드
-  - Dialog
     - 위치: `components/ui/dialog.tsx`
     - 역할: 확인/경고/편집 모달. 접근성(포커스 트랩, aria) 보장
     - 사용처: 삭제 확인, 간단한 편집/미리보기
@@ -138,26 +128,37 @@
 - 설계 원칙
   - Server vs Client: 데이터 패칭과 SEO가 필요한 컴포넌트는 Server Component로, 상호작용이 필요한 부분만 Client Component로 분리
   - Composition: 작은 UI primitives(Button/Input/Card/Dialog)을 조합해 페이지 컴포넌트를 구성
-  - 접근성: 모든 폼 필드에 label/aria 속성, Dialog는 포커스 트랩을 적용
   - 문서화: 각 `components/ui/*`에 간단한 사용 예시와 props 설명을 제공
 
 ## 5) 데이터 모델 (기본 스키마)
-
 아래 데이터 모델은 간단한 블로그 요구사항을 만족하도록 설계한 기본 스키마입니다. 실제 DB 타입(예: Postgres)은 선택에 따라 조정 가능합니다.
 
 - 관계 요약
-  - 한 명의 `user`는 여러 `post`를 작성할 수 있다. (1:N)
 
 - `users` 테이블 (권장컬럼)
   - id: UUID (PK)
-  - email: string, unique, not null
-  - name: string
-  - bio: text, nullable
-  - avatar_url: string, nullable
-  - created_at: timestamp, default now()
   - updated_at: timestamp, nullable
 
 - `posts` 테이블 (권장컬럼)
+  Ch11 RLS 고려사항
+
+  - RLS 정책은 서비스 보안의 핵심입니다. 클라이언트에서의 분기나 UI 비활성화는 UX일 뿐이며, 보안은 RLS로 보장해야 합니다.
+  - RLS는 Supabase CLI 마이그레이션(`supabase/migrations/*.sql`)으로 관리합니다. SQL Editor에서 바로 적용하는 대신 마이그레이션 파일을 커밋해야 합니다.
+  - 적용 우선순위: `posts` 테이블의 `user_id` 컬럼을 기준으로 INSERT/UPDATE/DELETE 권한을 auth.uid() === user_id로 제한.
+
+  요약: posts 테이블 보호 정책
+
+  - SELECT: 누구나 허용 (USING (true))
+  - INSERT: 로그인 사용자만, INSERT 후 `user_id = auth.uid()::uuid` 이어야 함 (WITH CHECK)
+  - UPDATE: 작성자만, UPDATE 시와 결과가 모두 `user_id = auth.uid()::uuid` 이어야 함 (USING + WITH CHECK)
+  - DELETE: 작성자만 허용 (USING)
+
+  마이그레이션 위치: `supabase/migrations/20260520043533_add_posts_rls.sql`
+
+  Version note
+
+  - 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
+  - 현재 설치(이 리포지토리 `package.json`): @supabase/supabase-js ^2.105.1, @supabase/ssr ^0.10.2
   - id: UUID (PK)
   - user_id: UUID (FK -> profiles.id), not null
   - title: string, not null

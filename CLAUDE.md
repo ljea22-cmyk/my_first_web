@@ -8,16 +8,18 @@
 - App Router 전용: `pages/` 또는 `next/router` 사용 금지.
 - 환경변수 이름(Ch8 기준) 유지: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-Version Policy (요약):
+
+Ch11 RLS guidance
+
+- RLS policy files should be maintained as Supabase CLI migration SQL files under `supabase/migrations/` rather than ad-hoc SQL Editor changes.
+- Focus RLS on `posts.user_id` vs `auth.uid()` for INSERT/UPDATE/DELETE restrictions.
+- Never expose service_role keys in client code; document and enforce this constraint.
+
+Version note
 
 - 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
-- 실제 repo의 `package.json`이 더 최신일 수 있음. 설명은 교재 기준으로 통일하되 빌드 오류는 `package.json` 기준으로 확인.
+- 현재 설치(이 리포지토리 `package.json`): @supabase/supabase-js ^2.105.1, @supabase/ssr ^0.10.2
 
-Ch10 준비 체크
-
-- 브라우저 Supabase 클라이언트: `lib/supabase/client.ts`를 사용하도록 안내하세요.
-- 인증 상태 공유: `AuthProvider` + `useAuth()` 패턴을 권장합니다.
-- posts 테이블 컬럼명은 마이그레이션에 따라 `user_id`를 사용합니다. 문서/코드에서 컬럼명을 일관되게 유지하세요.
 
 버전 안내
 

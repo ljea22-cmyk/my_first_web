@@ -34,6 +34,11 @@
 - Do NOT use `next/router` or Pages Router patterns; App Router only — use `next/navigation` in client code.
 - Do NOT include `service_role` or any server-only Supabase keys in client code. Only `NEXT_PUBLIC_*` keys may be present on the client.
 
+RLS / Ch11 guidance
+
+- Row Level Security (RLS) is authoritative: UI checks are UX only. Always implement RLS policies via a migration under `supabase/migrations/` and commit them.
+- Never expose `service_role` or server-only keys in the repo or client bundles. If a server operation needs elevated privileges, run it on the server (API route or server actions) and keep keys in environment variables not checked into source.
+
 ## Known AI Mistakes
 
 - Do not use `next/router`; use `next/navigation` when navigation is needed.
