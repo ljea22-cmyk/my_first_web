@@ -37,7 +37,7 @@ async function fetchPosts(query?: string): Promise<PostRow[]> {
 
   const { data, error } = await req;
   if (error) throw error;
-  return (data as PostRow[]) ?? [];
+  return (data as unknown as PostRow[]) ?? [];
 }
 
 export default async function PostsPage({
