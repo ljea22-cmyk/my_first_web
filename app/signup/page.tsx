@@ -30,7 +30,6 @@ export default function SignupPage() {
       return
     }
 
-    // 성공: 로그인 페이지로 리디렉트
     setSuccess('가입 완료. 로그인하세요.')
     router.push('/login')
   }
@@ -50,7 +49,7 @@ export default function SignupPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="mt-1 block w-full border rounded px-3 py-2"
+            className="mt-1 block w-full border rounded-full px-3 py-2"
           />
         </div>
 
@@ -64,7 +63,7 @@ export default function SignupPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 block w-full border rounded px-3 py-2"
+            className="mt-1 block w-full border rounded-full px-3 py-2"
           />
         </div>
 
@@ -78,7 +77,7 @@ export default function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="mt-1 block w-full border rounded px-3 py-2"
+            className="mt-1 block w-full border rounded-full px-3 py-2"
           />
         </div>
 
@@ -89,7 +88,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+            className="w-full bg-sky-200 text-white px-4 py-2 rounded-full hover:bg-sky-300 disabled:opacity-50 font-medium transition"
           >
             {loading ? '가입 중...' : '회원가입'}
           </button>

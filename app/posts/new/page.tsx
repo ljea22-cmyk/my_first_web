@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { createBrowserSupabase } from "@/lib/supabase/client";
+import confetti from "canvas-confetti";
 
 export default function Page() {
   const router = useRouter();
@@ -14,6 +15,8 @@ export default function Page() {
   const [touched, setTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -28,6 +31,22 @@ export default function Page() {
       </main>
     );
   }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const fireConfetti = () => {
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ["#fde68a", "#bae6fd", "#fca5a5", "#86efac", "#c4b5fd"],
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,11 +69,34 @@ export default function Page() {
 
     try {
       const supabase = createBrowserSupabase();
+
+      let imageUrl = null;
+
+      if (imageFile) {
+        const ext = imageFile.name.split(".").pop();
+        const path = `${user.id}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from("images")
+          .upload(path, imageFile);
+
+        if (uploadError) {
+          setError("이미지 업로드 실패: " + uploadError.message);
+          setSubmitting(false);
+          return;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from("images")
+          .getPublicUrl(path);
+        imageUrl = urlData.publicUrl;
+      }
+
       const res = await supabase.from("posts").insert([
         {
           title: title.trim(),
           content: content.trim(),
           user_id: user.id,
+          image_url: imageUrl,
         },
       ]).select("id").single();
 
@@ -64,13 +106,17 @@ export default function Page() {
         return;
       }
 
+      fireConfetti();
+
       const newPost = res.data;
-      // Redirect to posts list or new post detail if id available
-      if (newPost?.id) {
-        router.push(`/posts/${newPost.id}`);
-      } else {
-        router.push("/posts");
-      }
+      setTimeout(() => {
+        if (newPost?.id) {
+          router.push(`/posts/${newPost.id}`);
+        } else {
+          router.push("/posts");
+        }
+      }, 1500);
+
     } catch (err: any) {
       setError(err?.message ?? String(err));
       setSubmitting(false);
@@ -93,8 +139,7 @@ export default function Page() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목을 입력하세요"
             onBlur={() => setTouched(true)}
-            aria-invalid={touched && !title.trim()}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-300"
           />
           {touched && !title.trim() && (
             <p className="text-sm text-red-600 mt-1">제목은 비어있을 수 없습니다.</p>
@@ -111,8 +156,28 @@ export default function Page() {
             onChange={(e) => setContent(e.target.value)}
             placeholder="내용을 입력하세요"
             required
-            className="w-full border rounded px-3 py-2 h-40 resize-vertical focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border rounded px-3 py-2 h-40 resize-vertical focus:outline-none focus:ring-2 focus:ring-sky-300"
           />
+        </div>
+
+        <div>
+          <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
+            이미지 첨부 (선택)
+          </label>
+          <input
+            id="image"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full text-sm text-gray-500"
+          />
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="미리보기"
+              className="mt-2 rounded max-h-48 object-cover"
+            />
+          )}
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
@@ -120,7 +185,7 @@ export default function Page() {
         <div className="flex items-center gap-3">
           <button
             type="submit"
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+            className="bg-sky-200 text-white px-6 py-2 rounded-full hover:bg-sky-300 disabled:opacity-50 font-medium transition"
             disabled={submitting}
           >
             {submitting ? "저장 중..." : "저장"}
@@ -128,7 +193,7 @@ export default function Page() {
 
           <button
             type="button"
-            className="px-4 py-2 rounded border"
+            className="px-6 py-2 rounded-full border hover:bg-gray-100 transition"
             onClick={() => router.push("/posts")}
           >
             취소

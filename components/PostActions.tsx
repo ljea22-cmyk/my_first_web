@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase/client";
+import confetti from "canvas-confetti";
 
 type Props = {
   postUserId?: string | null;
@@ -33,8 +34,6 @@ export default function PostActions({ postUserId, postId }: Props) {
     return () => { mounted = false; };
   }, []);
 
-  // Note: This client-side check is only for UX (showing/hiding buttons).
-  // Real authorization must be enforced via RLS (Ch11).
   if (!postUserId || currentUserId === null || currentUserId !== postUserId) return null;
 
   const startEdit = async () => {
@@ -72,6 +71,28 @@ export default function PostActions({ postUserId, postId }: Props) {
     }
   };
 
+  const fireRain = () => {
+    const duration = 1500;
+    const end = Date.now() + duration;
+
+    const interval = setInterval(() => {
+      if (Date.now() > end) {
+        clearInterval(interval);
+        return;
+      }
+      confetti({
+        particleCount: 10,
+        angle: 270,
+        spread: 60,
+        origin: { x: Math.random(), y: 0 },
+        gravity: 2,
+        scalar: 0.8,
+        shapes: ["circle"],
+        colors: ["#93c5fd", "#bae6fd", "#7dd3fc", "#e0f2fe"],
+      });
+    }, 100);
+  };
+
   const handleDelete = async () => {
     setError(null);
     if (!confirm("정말 삭제하시겠습니까?")) return;
@@ -80,7 +101,10 @@ export default function PostActions({ postUserId, postId }: Props) {
       const supabase = createBrowserSupabase();
       const { error } = await supabase.from("posts").delete().eq("id", postId);
       if (error) { setError(error.message); setLoading(false); return; }
-      router.push("/posts");
+      fireRain();
+      setTimeout(() => {
+        router.push("/posts");
+      }, 1500);
     } catch (e: any) {
       setError(e?.message ?? String(e));
       setLoading(false);
@@ -91,8 +115,8 @@ export default function PostActions({ postUserId, postId }: Props) {
     <div className="mt-6">
       {!editing ? (
         <div className="flex gap-2">
-          <button onClick={startEdit} className="px-3 py-1 bg-indigo-600 text-white rounded">수정</button>
-          <button onClick={handleDelete} className="px-3 py-1 bg-red-600 text-white rounded">삭제</button>
+          <button onClick={startEdit} className="px-4 py-1 bg-sky-200 text-white rounded-full hover:bg-sky-300 transition">수정</button>
+          <button onClick={handleDelete} className="px-4 py-1 bg-red-300 text-white rounded-full hover:bg-red-400 transition">삭제</button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -106,10 +130,10 @@ export default function PostActions({ postUserId, postId }: Props) {
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2">
-            <button onClick={handleUpdate} disabled={loading} className="px-3 py-1 bg-indigo-600 text-white rounded">
+            <button onClick={handleUpdate} disabled={loading} className="px-4 py-1 bg-sky-200 text-white rounded-full hover:bg-sky-300 transition">
               {loading ? "저장 중..." : "저장"}
             </button>
-            <button onClick={() => { setEditing(false); setError(null); }} disabled={loading} className="px-3 py-1 border rounded">취소</button>
+            <button onClick={() => { setEditing(false); setError(null); }} disabled={loading} className="px-4 py-1 border rounded-full hover:bg-gray-100 transition">취소</button>
           </div>
         </div>
       )}

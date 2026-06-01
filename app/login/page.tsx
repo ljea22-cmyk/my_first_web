@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signInWithEmail } from '@/lib/auth'
+import { getErrorMessage } from '@/lib/error-message'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,14 +22,10 @@ export default function LoginPage() {
     setLoading(false)
 
     if (res?.error) {
-      // Supabase error object may include message; handle safely
-      const err = res.error as any
-      const message = (typeof err === 'object' && (err?.message || err?.msg)) || String(err)
-      setError(message || 'Login failed')
+      setError(getErrorMessage(res.error))
       return
     }
 
-    // successful login
     router.push('/posts')
   }
 
@@ -47,7 +44,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 block w-full border rounded px-3 py-2"
+            className="mt-1 block w-full border rounded-full px-3 py-2"
           />
         </div>
 
@@ -61,7 +58,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="mt-1 block w-full border rounded px-3 py-2"
+            className="mt-1 block w-full border rounded-full px-3 py-2"
           />
         </div>
 
@@ -71,7 +68,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+            className="w-full bg-sky-200 text-white px-4 py-2 rounded-full hover:bg-sky-300 disabled:opacity-50 font-medium transition"
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>
