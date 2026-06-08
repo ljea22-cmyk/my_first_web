@@ -18,7 +18,7 @@ export default function NavBar() {
   return (
     <nav className="bg-yellow-100 text-gray-900 shadow-sm">
       <div className="max-w-4xl mx-auto p-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="text-lg font-bold text-yellow-600">내 블로그</div>
+        <div className="text-lg font-bold text-yellow-600">잰니의 블로그</div>
 
         <div className="flex flex-wrap items-center gap-2">
           <Link href="/" className="text-sm px-2 py-1 hover:underline">

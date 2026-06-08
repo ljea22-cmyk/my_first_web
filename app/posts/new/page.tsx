@@ -17,6 +17,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -35,7 +36,14 @@ export default function Page() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > 50 * 1024 * 1024) {
+      setError("파일 크기가 50MB를 초과합니다");
+      return;
+    }
+
     setImageFile(file);
+    setMediaType(file.type.startsWith("video/") ? "video" : "image");
     setImagePreview(URL.createObjectURL(file));
   };
 
@@ -80,7 +88,7 @@ export default function Page() {
           .upload(path, imageFile);
 
         if (uploadError) {
-          setError("이미지 업로드 실패: " + uploadError.message);
+          setError("파일 업로드 실패: " + uploadError.message);
           setSubmitting(false);
           return;
         }
@@ -97,6 +105,7 @@ export default function Page() {
           content: content.trim(),
           user_id: user.id,
           image_url: imageUrl,
+          author_email: user.email,
         },
       ]).select("id").single();
 
@@ -162,21 +171,29 @@ export default function Page() {
 
         <div>
           <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-            이미지 첨부 (선택)
+            이미지 / 동영상 첨부 (선택, 최대 50MB)
           </label>
           <input
             id="image"
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             onChange={handleImageChange}
             className="w-full text-sm text-gray-500"
           />
           {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="미리보기"
-              className="mt-2 rounded max-h-48 object-cover"
-            />
+            mediaType === "video" ? (
+              <video
+                src={imagePreview}
+                controls
+                className="mt-2 rounded max-h-48 w-full"
+              />
+            ) : (
+              <img
+                src={imagePreview}
+                alt="미리보기"
+                className="mt-2 rounded max-h-48 object-cover"
+              />
+            )
           )}
         </div>
 

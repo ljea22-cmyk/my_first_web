@@ -12,6 +12,7 @@ type PostRow = {
   created_at: string | null;
   user_id: string | null;
   image_url: string | null;
+  author_email: string | null;
 };
 
 type Props = {
@@ -33,7 +34,7 @@ export default async function PostPage({ params }: Props) {
 
   const { data, error } = await supabase
     .from("posts")
-    .select("id, title, content, created_at, user_id, image_url")
+    .select("id, title, content, created_at, user_id, image_url, author_email")
     .eq("id", id)
     .maybeSingle();
 
@@ -56,17 +57,27 @@ export default async function PostPage({ params }: Props) {
         </div>
 
         <p className="text-sm text-gray-500">
-          작성자 ID: {post.user_id ?? "알수없음"} •{" "}
+          작성자: {post.author_email ?? "알수없음"} •{" "}
           {post.created_at ? new Date(post.created_at).toISOString().slice(0, 10) : ""}
         </p>
         <div className="mt-6 text-gray-700 whitespace-pre-line">{post.content}</div>
+
         {post.image_url && (
-          <img
-            src={post.image_url}
-            alt="첨부 이미지"
-            className="mt-4 rounded max-h-96 object-cover"
-          />
+          post.image_url.match(/\.(mp4|mov|webm|avi)$/i) ? (
+            <video
+              src={post.image_url}
+              controls
+              className="mt-4 rounded max-h-96 w-full"
+            />
+          ) : (
+            <img
+              src={post.image_url}
+              alt="첨부 이미지"
+              className="mt-4 rounded max-h-96 object-cover"
+            />
+          )
         )}
+
         <LikeButton postId={post.id} />
         <PostActions postUserId={post.user_id} postId={post.id} />
         <Comments postId={post.id} />
